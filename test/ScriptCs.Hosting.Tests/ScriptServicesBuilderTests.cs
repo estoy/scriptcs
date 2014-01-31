@@ -14,15 +14,16 @@ namespace ScriptCs.Tests
         {
             private Mock<ILog> _mockLogger = new Mock<ILog>();
 
-            private ScriptServices _scriptServices = new ScriptServices(null, null, null, null, null, null, null, null, null, null);
+            private ScriptServices _scriptServices = new ScriptServices(null, null, null, null, null, null, null, null, null, null, null);
             private Mock<IRuntimeServices> _mockFactory = new Mock<IRuntimeServices>();
             private Mock<IConsole> _mockConsole = new Mock<IConsole>();
+            private Mock<IInputHistory> _mockInputHistory = new Mock<IInputHistory>();
             private ScriptServicesBuilder _builder = null;
 
             public TheBuildMethod()
             {
                 _mockFactory.Setup(f => f.GetScriptServices()).Returns(_scriptServices);
-                _builder = new ScriptServicesBuilder(_mockConsole.Object, _mockLogger.Object, _mockFactory.Object);
+                _builder = new ScriptServicesBuilder(_mockConsole.Object, _mockInputHistory.Object, _mockLogger.Object, _mockFactory.Object);
             }
 
             [Fact]

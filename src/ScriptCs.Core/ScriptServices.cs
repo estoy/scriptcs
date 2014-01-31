@@ -17,6 +17,7 @@ namespace ScriptCs
             IObjectSerializer objectSerializer,
             ILog logger,
             IAssemblyResolver assemblyResolver,
+            IInputHistory inputHistory,
             IConsole console = null,
             IInstallationProvider installationProvider = null)
         {
@@ -29,6 +30,7 @@ namespace ScriptCs
             PackageInstaller = packageInstaller;
             ObjectSerializer = objectSerializer;
             Logger = logger;
+            InputHistory = inputHistory;
             Console = console;
             AssemblyResolver = assemblyResolver;
             InstallationProvider = installationProvider;
@@ -46,5 +48,6 @@ namespace ScriptCs
         public IConsole Console { get; private set; }
         public IAssemblyResolver AssemblyResolver { get; private set; }
 		public IInstallationProvider InstallationProvider { get; private set; }
+        public IInputHistory InputHistory { get; private set; }
     }
 }

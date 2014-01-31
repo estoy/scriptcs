@@ -25,6 +25,7 @@ namespace ScriptCs.Tests
                 ScriptPack = new Mock<IScriptPack>();
                 FilePreProcessor = new Mock<IFilePreProcessor>();
                 ObjectSerializer = new Mock<IObjectSerializer>();
+                InputHistory = new Mock<IInputHistory>();
             }
 
             public Mock<IObjectSerializer> ObjectSerializer { get; private set; }
@@ -40,11 +41,13 @@ namespace ScriptCs.Tests
             public Mock<IScriptPack> ScriptPack { get; private set; }
 
             public Mock<IFilePreProcessor> FilePreProcessor { get; private set; }
+
+            public Mock<IInputHistory> InputHistory { get; private set; }
         }
 
         public static Repl GetRepl(Mocks mocks)
         {
-            return new Repl(new string[0], mocks.FileSystem.Object, mocks.ScriptEngine.Object, mocks.ObjectSerializer.Object, mocks.Logger.Object, mocks.Console.Object, mocks.FilePreProcessor.Object);
+            return new Repl(new string[0], mocks.FileSystem.Object, mocks.ScriptEngine.Object, mocks.ObjectSerializer.Object, mocks.Logger.Object, mocks.Console.Object, mocks.FilePreProcessor.Object, mocks.InputHistory.Object);
         }
 
         public class TheConstructor
@@ -387,6 +390,92 @@ namespace ScriptCs.Tests
                 _repl.Execute("}");
 
                 mocks.ScriptEngine.Verify();
+            }
+
+            [Fact]
+            public void ShouldClearHistoryWhenDumping()
+            {
+                var mocks = new Mocks();
+
+                _repl = GetRepl(mocks);
+                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
+      
+                _repl.Execute(":dump");
+
+                mocks.InputHistory.Verify(ih => ih.Clear(), Times.Once());
+            }
+
+            [Fact]
+            public void ShouldBuildHistoryWhenDumping()
+            {
+                var mocks = new Mocks();
+
+                _repl = GetRepl(mocks);
+                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
+
+                _repl.Execute(":dump");
+
+                mocks.InputHistory.Verify(ih => ih.BuildHistory(), Times.Once());
+            }
+
+            [Fact]
+            public void ShouldWriteToDefaultFileWhenDumping()
+            {
+                var mocks = new Mocks();
+
+                _repl = GetRepl(mocks);
+                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
+
+                _repl.Execute(":dump");
+
+                mocks.FileSystem.Verify(fs => fs.WriteToFile("Dump.txt", It.IsAny<string>()), Times.Once());
+            }
+
+            [Fact]
+            public void ShouldWriteToSpecifiedFileWhenDumping()
+            {
+                var mocks = new Mocks();
+
+                _repl = GetRepl(mocks);
+                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
+
+                _repl.Execute(":dump hhh.txt");
+
+                mocks.FileSystem.Verify(fs => fs.WriteToFile("hhh.txt", It.IsAny<string>()), Times.Once());
+            }
+
+            [Fact]
+            public void ShouldWriteLinesWhenDumping()
+            {
+                var mocks = new Mocks();
+                const string CODE = "code";
+
+                _repl = GetRepl(mocks);
+                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
+                mocks.InputHistory.Setup(history => history.BuildHistory()).Returns(CODE);
+
+                _repl.Execute(":dump");
+
+                mocks.FileSystem.Verify(fs => fs.WriteToFile("Dump.txt", CODE), Times.Once());
+            }
+
+            [Fact]
+            public void ShouldClearHistoryWhenWipingHistory()
+            {
+                var mocks = new Mocks();
+
+                _repl = GetRepl(mocks);
+                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
+
+                _repl.Execute(":wipe");
+
+                mocks.InputHistory.Verify(ih => ih.Clear(), Times.Once());
             }
         }
     }

@@ -12,6 +12,8 @@ namespace ScriptCs
 
         private readonly IObjectSerializer _serializer;
 
+        private readonly IInputHistory _inputHistory;
+
         public Repl(
             string[] scriptArgs,
             IFileSystem fileSystem,
@@ -19,10 +21,13 @@ namespace ScriptCs
             IObjectSerializer serializer,
             ILog logger,
             IConsole console,
-            IFilePreProcessor filePreProcessor) : base(fileSystem, filePreProcessor, scriptEngine, logger)
+            IFilePreProcessor filePreProcessor,
+            IInputHistory inputHistory
+        ) : base(fileSystem, filePreProcessor, scriptEngine, logger)
         {
             _scriptArgs = scriptArgs;
             _serializer = serializer;
+            _inputHistory = inputHistory;
             Console = console;
         }
 
@@ -43,6 +48,27 @@ namespace ScriptCs
 
             try
             {
+                if (script.StartsWith(":dump", StringComparison.OrdinalIgnoreCase))
+                {
+                    var arg = script.Substring(":dump".Length).Trim();
+
+                    string filePath = String.IsNullOrWhiteSpace(arg) ? "Dump.txt" : arg;
+
+                    var inputLines = _inputHistory.BuildHistory();
+                    _inputHistory.Clear();
+
+                    FileSystem.WriteToFile(filePath, inputLines);
+
+                    return new ScriptResult();
+                }
+
+                if (script.StartsWith(":wipe", StringComparison.OrdinalIgnoreCase))
+                {
+                    _inputHistory.Clear();
+
+                    return new ScriptResult();
+                }
+
                 if (script.StartsWith("#clear", StringComparison.OrdinalIgnoreCase))
                 {
                     Console.Clear();
@@ -70,7 +96,12 @@ namespace ScriptCs
                 Buffer += preProcessResult.Code;
 
                 var result = ScriptEngine.Execute(Buffer, _scriptArgs, References, DefaultNamespaces, ScriptPackSession);
-                if (result == null) return new ScriptResult();
+                if (result == null)
+                {
+                    _inputHistory.AddLine(script);
+                    _inputHistory.Commit();
+                    return new ScriptResult();
+                }
 
                 if (result.CompileExceptionInfo != null)
                 {
@@ -86,7 +117,18 @@ namespace ScriptCs
 
                 if (result.IsPendingClosingChar)
                 {
+                    _inputHistory.AddLine(script);
+
                     return result;
+                }
+
+                if (!result.IsPendingClosingChar)
+                {
+                    if (result.CompileExceptionInfo != null) _inputHistory.Rollback();    
+                    else 
+                    {
+                        _inputHistory.AddLine(script);
+                    }
                 }
 
                 if (result.ReturnValue != null)
@@ -98,6 +140,7 @@ namespace ScriptCs
                     Console.WriteLine(serializedResult);
                 }
 
+                _inputHistory.Commit();
                 Buffer = null;
                 return result;
             }
