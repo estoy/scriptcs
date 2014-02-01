@@ -17,7 +17,7 @@ namespace ScriptCs.Tests
         public class TheCreateContainerMethod
         {
             private Mock<IConsole> _mockConsole = new Mock<IConsole>();
-            private Mock<IInputHistory> _mockInputHistory = new Mock<IInputHistory>();
+            private Mock<IReplInputHistory> _mockInputHistory = new Mock<IReplInputHistory>();
             private Type _scriptExecutorType = null;
             private Type _scriptEngineType = null;
             private Mock<ILog> _mockLogger = new Mock<ILog>();

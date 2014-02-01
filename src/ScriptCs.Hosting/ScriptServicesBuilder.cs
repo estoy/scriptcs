@@ -17,7 +17,7 @@ namespace ScriptCs
         private readonly IInitializationServices _initializationServices;
         private IRuntimeServices _runtimeServices;
         private readonly IConsole _console;
-        private readonly IInputHistory _inputHistory;
+        private readonly IReplInputHistory _inputHistory;
         private bool _repl = false;
         private bool _cache = false;
         private string _scriptName;
@@ -26,7 +26,7 @@ namespace ScriptCs
         private Type _scriptEngineType;
         private ILog _logger;
 
-        public ScriptServicesBuilder(IConsole console, IInputHistory inputHistory, ILog logger, IRuntimeServices runtimeServices = null)
+        public ScriptServicesBuilder(IConsole console, IReplInputHistory inputHistory, ILog logger, IRuntimeServices runtimeServices = null)
         {
             _initializationServices = new InitializationServices(logger);
             _runtimeServices = runtimeServices;

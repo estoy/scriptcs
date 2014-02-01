@@ -17,7 +17,7 @@ namespace ScriptCs.Command
         private readonly IFileSystem _fileSystem;
         private readonly IConsole _console;
         private readonly ILog _logger;
-        private readonly IInputHistory _inputHistory;
+        private readonly IReplInputHistory _inputHistory;
 
         public ExecuteReplCommand(
             string scriptName,
@@ -30,7 +30,7 @@ namespace ScriptCs.Command
             ILog logger,
             IConsole console,
             IAssemblyResolver assemblyResolver,
-            IInputHistory inputHistory)
+            IReplInputHistory inputHistory)
         {
             _scriptName = scriptName;
             _scriptArgs = scriptArgs;

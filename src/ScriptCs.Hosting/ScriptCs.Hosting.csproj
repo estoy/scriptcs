@@ -59,7 +59,6 @@
     <Compile Include="IInitializationServices.cs" />
     <Compile Include="IModuleLoader.cs" />
     <Compile Include="InitializationServices.cs" />
-    <Compile Include="InputHistory.cs" />
     <Compile Include="IRuntimeServices.cs" />
     <Compile Include="IScriptServicesBuilder.cs" />
     <Compile Include="LoggerConfigurator.cs" />

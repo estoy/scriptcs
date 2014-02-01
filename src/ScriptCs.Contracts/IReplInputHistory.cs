@@ -5,16 +5,13 @@ using System.Text;
 
 namespace ScriptCs.Contracts
 {
-    public interface IInputHistory
+    public interface IReplInputHistory
     {
         void AddLine(string line);
         void Commit();
-        //void CommitLine(string line);
         void Rollback();
 
         string BuildHistory();
         void Clear();
-
-        //string BuildHistoryAndClear();
     }
 }

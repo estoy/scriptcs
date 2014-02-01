@@ -13,7 +13,7 @@ namespace ScriptCs
             ProfileOptimization.StartProfile(typeof(Program).Assembly.GetName().Name + ".profile");
 
             var console = new ScriptConsole();
-            var inputHistory = new InputHistory();
+            var inputHistory = new ReplInputHistory();
 
             var parser = new ArgumentHandler(new ArgumentParser(console), new ConfigFileParser(console), new FileSystem());
             var arguments = parser.Parse(args);

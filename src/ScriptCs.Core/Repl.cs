@@ -12,7 +12,7 @@ namespace ScriptCs
 
         private readonly IObjectSerializer _serializer;
 
-        private readonly IInputHistory _inputHistory;
+        private readonly IReplInputHistory _inputHistory;
 
         public Repl(
             string[] scriptArgs,
@@ -22,7 +22,7 @@ namespace ScriptCs
             ILog logger,
             IConsole console,
             IFilePreProcessor filePreProcessor,
-            IInputHistory inputHistory
+            IReplInputHistory inputHistory
         ) : base(fileSystem, filePreProcessor, scriptEngine, logger)
         {
             _scriptArgs = scriptArgs;

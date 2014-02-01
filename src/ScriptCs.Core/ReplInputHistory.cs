@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using ScriptCs.Contracts;
 
 namespace ScriptCs
 {
-    public class InputHistory : IInputHistory
+    public class ReplInputHistory : IReplInputHistory
     {
-        private StringBuilder _lines;
+        private readonly StringBuilder _lines;
+        private readonly StringBuilder _currentLine;
 
-        private StringBuilder _currentLine;
-
-        public InputHistory()
+        public ReplInputHistory()
         {
             _lines = new StringBuilder();
             _currentLine = new StringBuilder();
@@ -26,7 +21,7 @@ namespace ScriptCs
 
         public void Commit()
         {
-            _lines.Append(_currentLine.ToString());
+            _lines.Append(_currentLine);
             _currentLine.Clear();
         }
 

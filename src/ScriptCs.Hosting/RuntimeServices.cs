@@ -16,14 +16,14 @@ namespace ScriptCs
     {
         private readonly IList<Type> _lineProcessors;
         private readonly IConsole _console;
-        private readonly IInputHistory _inputHistory;
+        private readonly IReplInputHistory _inputHistory;
         private readonly Type _scriptEngineType;
         private readonly Type _scriptExecutorType;
         private readonly bool _initDirectoryCatalog;
         private readonly IInitializationServices _initializationServices;
         private readonly string _scriptName;
 
-        public RuntimeServices(ILog logger, IDictionary<Type, object> overrides, IList<Type> lineProcessors, IConsole console, IInputHistory inputHistory, Type scriptEngineType, Type scriptExecutorType, bool initDirectoryCatalog, IInitializationServices initializationServices, string scriptName) : 
+        public RuntimeServices(ILog logger, IDictionary<Type, object> overrides, IList<Type> lineProcessors, IConsole console, IReplInputHistory inputHistory, Type scriptEngineType, Type scriptExecutorType, bool initDirectoryCatalog, IInitializationServices initializationServices, string scriptName) : 
             base(logger, overrides)
         {
             _lineProcessors = lineProcessors;
@@ -60,7 +60,7 @@ namespace ScriptCs
             RegisterOverrideOrDefault<IPackageInstaller>(builder, b => b.RegisterType<PackageInstaller>().As<IPackageInstaller>().SingleInstance());
             RegisterOverrideOrDefault<ScriptServices>(builder, b => b.RegisterType<ScriptServices>().SingleInstance());
             RegisterOverrideOrDefault<IObjectSerializer>(builder, b => b.RegisterType<ObjectSerializer>().As<IObjectSerializer>().SingleInstance());
-            RegisterOverrideOrDefault<IInputHistory>(builder, b => b.RegisterInstance(_inputHistory));
+            RegisterOverrideOrDefault<IReplInputHistory>(builder, b => b.RegisterInstance(_inputHistory));
             RegisterOverrideOrDefault<IConsole>(builder, b => b.RegisterInstance(_console));
 
             var assemblyResolver = _initializationServices.GetAssemblyResolver();

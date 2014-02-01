@@ -34,7 +34,7 @@
     <Compile Include="IFileParser.cs" />
     <Compile Include="IFilePreProcessor.cs" />
     <Compile Include="IFileSystem.cs" />
-    <Compile Include="IInputHistory.cs" />
+    <Compile Include="IReplInputHistory.cs" />
     <Compile Include="IInstallationProvider.cs" />
     <Compile Include="ILineProcessor.cs" />
     <Compile Include="IModule.cs" />

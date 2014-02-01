@@ -25,7 +25,7 @@ namespace ScriptCs.Tests
                 ScriptPack = new Mock<IScriptPack>();
                 FilePreProcessor = new Mock<IFilePreProcessor>();
                 ObjectSerializer = new Mock<IObjectSerializer>();
-                InputHistory = new Mock<IInputHistory>();
+                InputHistory = new Mock<IReplInputHistory>();
             }
 
             public Mock<IObjectSerializer> ObjectSerializer { get; private set; }
@@ -42,7 +42,7 @@ namespace ScriptCs.Tests
 
             public Mock<IFilePreProcessor> FilePreProcessor { get; private set; }
 
-            public Mock<IInputHistory> InputHistory { get; private set; }
+            public Mock<IReplInputHistory> InputHistory { get; private set; }
         }
 
         public static Repl GetRepl(Mocks mocks)

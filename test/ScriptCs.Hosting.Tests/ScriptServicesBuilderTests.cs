@@ -17,7 +17,7 @@ namespace ScriptCs.Tests
             private ScriptServices _scriptServices = new ScriptServices(null, null, null, null, null, null, null, null, null, null, null);
             private Mock<IRuntimeServices> _mockFactory = new Mock<IRuntimeServices>();
             private Mock<IConsole> _mockConsole = new Mock<IConsole>();
-            private Mock<IInputHistory> _mockInputHistory = new Mock<IInputHistory>();
+            private Mock<IReplInputHistory> _mockInputHistory = new Mock<IReplInputHistory>();
             private ScriptServicesBuilder _builder = null;
 
             public TheBuildMethod()
