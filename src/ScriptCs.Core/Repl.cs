@@ -51,8 +51,7 @@ namespace ScriptCs
                 if (script.StartsWith(":dump", StringComparison.OrdinalIgnoreCase))
                 {
                     var arg = script.Substring(":dump".Length).Trim();
-
-                    string filePath = String.IsNullOrWhiteSpace(arg) ? "Dump.txt" : arg;
+                    var filePath = String.IsNullOrWhiteSpace(arg) ? "dump.csx" : arg;
 
                     var inputLines = _inputHistory.BuildHistory();
                     _inputHistory.Clear();

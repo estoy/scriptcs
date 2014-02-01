@@ -395,73 +395,59 @@ namespace ScriptCs.Tests
             [Fact]
             public void ShouldClearHistoryWhenDumping()
             {
-                var mocks = new Mocks();
-
-                _repl = GetRepl(mocks);
-                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
                 _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
       
                 _repl.Execute(":dump");
 
-                mocks.InputHistory.Verify(ih => ih.Clear(), Times.Once());
+                _mocks.InputHistory.Verify(ih => ih.Clear(), Times.Once());
             }
 
             [Fact]
             public void ShouldBuildHistoryWhenDumping()
             {
-                var mocks = new Mocks();
-
-                _repl = GetRepl(mocks);
-                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
                 _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
 
                 _repl.Execute(":dump");
 
-                mocks.InputHistory.Verify(ih => ih.BuildHistory(), Times.Once());
+                _mocks.InputHistory.Verify(ih => ih.BuildHistory(), Times.Once());
             }
 
             [Fact]
             public void ShouldWriteToDefaultFileWhenDumping()
             {
-                var mocks = new Mocks();
-
-                _repl = GetRepl(mocks);
-                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
                 _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
 
                 _repl.Execute(":dump");
 
-                mocks.FileSystem.Verify(fs => fs.WriteToFile("Dump.txt", It.IsAny<string>()), Times.Once());
+                _mocks.FileSystem.Verify(fs => fs.WriteToFile("dump.csx", It.IsAny<string>()), Times.Once());
             }
 
             [Fact]
             public void ShouldWriteToSpecifiedFileWhenDumping()
             {
-                var mocks = new Mocks();
-
-                _repl = GetRepl(mocks);
-                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
                 _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
 
                 _repl.Execute(":dump hhh.txt");
 
-                mocks.FileSystem.Verify(fs => fs.WriteToFile("hhh.txt", It.IsAny<string>()), Times.Once());
+                _mocks.FileSystem.Verify(fs => fs.WriteToFile("hhh.txt", It.IsAny<string>()), Times.Once());
             }
 
             [Fact]
             public void ShouldWriteLinesWhenDumping()
             {
-                var mocks = new Mocks();
                 const string CODE = "code";
 
-                _repl = GetRepl(mocks);
-                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
                 _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
-                mocks.InputHistory.Setup(history => history.BuildHistory()).Returns(CODE);
+                _mocks.InputHistory.Setup(history => history.BuildHistory()).Returns(CODE);
 
                 _repl.Execute(":dump");
 
-                mocks.FileSystem.Verify(fs => fs.WriteToFile("Dump.txt", CODE), Times.Once());
+                _mocks.FileSystem.Verify(fs => fs.WriteToFile("dump.csx", CODE), Times.Once());
             }
 
             [Fact]
