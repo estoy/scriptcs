@@ -62,16 +62,11 @@ namespace ScriptCs
                     return new ScriptResult();
                 }
 
-                if (script.StartsWith(":wipe", StringComparison.OrdinalIgnoreCase))
-                {
-                    _inputHistory.Clear();
-
-                    return new ScriptResult();
-                }
-
-                if (script.StartsWith("#clear", StringComparison.OrdinalIgnoreCase))
+                if (script.StartsWith("#clear", StringComparison.OrdinalIgnoreCase) ||
+                    script.StartsWith(":clear", StringComparison.OrdinalIgnoreCase))
                 {
                     Console.Clear();
+                    _inputHistory.Clear();
                     return new ScriptResult();
                 }
 

@@ -465,17 +465,14 @@ namespace ScriptCs.Tests
             }
 
             [Fact]
-            public void ShouldClearHistoryWhenWipingHistory()
+            public void ShouldClearHistoryWithClearCommand()
             {
-                var mocks = new Mocks();
-
-                _repl = GetRepl(mocks);
-                mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
                 _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
 
-                _repl.Execute(":wipe");
+                _repl.Execute(":clear");
 
-                mocks.InputHistory.Verify(ih => ih.Clear(), Times.Once());
+                _mocks.InputHistory.Verify(ih => ih.Clear(), Times.Once());
             }
         }
     }
