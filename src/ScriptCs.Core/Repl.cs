@@ -53,12 +53,14 @@ namespace ScriptCs
                 if (script.StartsWith(":dump", StringComparison.OrdinalIgnoreCase))
                 {
                     var arg = script.Substring(":dump".Length).Trim();
+                    var shouldAppend = arg.StartsWith(">>");
+                    arg = arg.TrimStart('>');
                     var filePath = String.IsNullOrWhiteSpace(arg) ? "dump.csx" : arg;
 
                     var inputLines = _inputHistory.BuildHistory();
                     _inputHistory.Clear();
 
-                    AppendToFile(filePath, inputLines);
+                    WriteToDumpFile(filePath, inputLines, shouldAppend);
                     
                     return new ScriptResult();
                 }
@@ -158,19 +160,19 @@ namespace ScriptCs
             }
         }
 
-        private void AppendToFile(string filePath, string inputLines)
+        private void WriteToDumpFile(string filePath, string content, bool shouldAppend)
         {
-            if (!FileSystem.FileExists(filePath))
-            {
-                FileSystem.WriteToFile(filePath, inputLines);
-            }
-            else
+            if (FileSystem.FileExists(filePath) && shouldAppend)
             {
                 using (var fs = FileSystem.CreateFileStream(filePath, FileMode.Append))
                 {
-                    var inputLineBytes = Encoding.UTF8.GetBytes(inputLines);
-                    fs.Write(inputLineBytes, 0, inputLineBytes.Length);
+                    var contentBytes = Encoding.UTF8.GetBytes(content);
+                    fs.Write(contentBytes, 0, contentBytes.Length);
                 }
+            }
+            else
+            {
+                FileSystem.WriteToFile(filePath, content);
             }
         }
     }

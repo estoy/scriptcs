@@ -510,17 +510,29 @@ namespace ScriptCs.Tests
             }
 
             [Fact]
-            public void ShouldAppendToDumpFileWhenItExists()
+            public void ShouldAppendToExistingDumpFileWhenPrefixingFilenameWithGreaterThanGreaterThan()
             {
                 _mocks.FileSystem.Setup(fs => fs.CurrentDirectory).Returns("C:/");
                 _mocks.FileSystem.Setup(fs => fs.FileExists("dump.csx")).Returns(true);
                 _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
                 _mocks.InputHistory.Setup(history => history.BuildHistory()).Returns("foo");
 
-                _repl.Execute(":dump");
+                _repl.Execute(":dump >>dump.csx");
 
                 _mocks.FileSystem.Verify(fs => fs.CreateFileStream("dump.csx", FileMode.Append));
             }
+
+            [Fact]
+            public void ShouldWriteToNewDumpFileWhenPrefixingNonExistingFilenameWithGreaterThanGreaterThan()
+            {
+                _mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
+                _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
+
+                _repl.Execute(":dump >>hhh.txt");
+
+                _mocks.FileSystem.Verify(fs => fs.WriteToFile("hhh.txt", It.IsAny<string>()), Times.Once());
+            }
+
 
             [Fact]
             public void ShouldWriteLinesWhenDumping()
