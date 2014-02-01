@@ -510,6 +510,19 @@ namespace ScriptCs.Tests
             }
 
             [Fact]
+            public void ShouldAppendToDumpFileWhenItExists()
+            {
+                _mocks.FileSystem.Setup(fs => fs.CurrentDirectory).Returns("C:/");
+                _mocks.FileSystem.Setup(fs => fs.FileExists("dump.csx")).Returns(true);
+                _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
+                _mocks.InputHistory.Setup(history => history.BuildHistory()).Returns("foo");
+
+                _repl.Execute(":dump");
+
+                _mocks.FileSystem.Verify(fs => fs.CreateFileStream("dump.csx", FileMode.Append));
+            }
+
+            [Fact]
             public void ShouldWriteLinesWhenDumping()
             {
                 const string CODE = "code";

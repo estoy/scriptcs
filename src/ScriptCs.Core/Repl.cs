@@ -6,6 +6,8 @@ using ScriptCs.Contracts;
 
 namespace ScriptCs
 {
+    using System.Text;
+
     public class Repl : ScriptExecutor
     {
         private readonly string[] _scriptArgs;
@@ -56,8 +58,8 @@ namespace ScriptCs
                     var inputLines = _inputHistory.BuildHistory();
                     _inputHistory.Clear();
 
-                    FileSystem.WriteToFile(filePath, inputLines);
-
+                    AppendToFile(filePath, inputLines);
+                    
                     return new ScriptResult();
                 }
 
@@ -153,6 +155,22 @@ namespace ScriptCs
             finally
             {
                 Console.ResetColor();
+            }
+        }
+
+        private void AppendToFile(string filePath, string inputLines)
+        {
+            if (!FileSystem.FileExists(filePath))
+            {
+                FileSystem.WriteToFile(filePath, inputLines);
+            }
+            else
+            {
+                using (var fs = FileSystem.CreateFileStream(filePath, FileMode.Append))
+                {
+                    var inputLineBytes = Encoding.UTF8.GetBytes(inputLines);
+                    fs.Write(inputLineBytes, 0, inputLineBytes.Length);
+                }
             }
         }
     }
