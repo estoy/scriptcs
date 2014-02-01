@@ -112,19 +112,19 @@ namespace ScriptCs
                 if (result.IsPendingClosingChar)
                 {
                     _inputHistory.AddLine(script);
-
                     return result;
                 }
 
-                if (!result.IsPendingClosingChar)
+                if (result.CompileExceptionInfo != null)
                 {
-                    if (result.CompileExceptionInfo != null) _inputHistory.Rollback();    
-                    else 
-                    {
-                        _inputHistory.AddLine(script);
-                    }
+                    _inputHistory.Rollback();
                 }
-
+                else
+                {
+                    _inputHistory.AddLine(script);
+                    _inputHistory.Commit();
+                }
+                
                 if (result.ReturnValue != null)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
@@ -134,7 +134,6 @@ namespace ScriptCs
                     Console.WriteLine(serializedResult);
                 }
 
-                _inputHistory.Commit();
                 Buffer = null;
                 return result;
             }

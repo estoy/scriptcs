@@ -12,6 +12,8 @@ using Xunit;
 
 namespace ScriptCs.Tests
 {
+    using System.Runtime.ExceptionServices;
+
     public class ReplTests
     {
         public class Mocks
@@ -413,6 +415,77 @@ namespace ScriptCs.Tests
 
                 _mocks.InputHistory.Verify(ih => ih.BuildHistory(), Times.Once());
             }
+
+            [Fact]
+            public void ShouldNotCommitToHistoryWhenHavingPendingClosingChar()
+            {
+                var mocks = new Mocks();
+                mocks.FilePreProcessor.Setup(
+                    filePreProcessor => filePreProcessor
+                        .ProcessScript("class test {"))
+                        .Returns(new FilePreProcessorResult { Code = "class test {" });
+                mocks.ScriptEngine.Setup(
+                    scriptEngine => scriptEngine
+                        .Execute(It.IsAny<string>(), It.IsAny<string[]>(), It.IsAny<AssemblyReferences>(), It.IsAny<IEnumerable<string>>(), It.IsAny<ScriptPackSession>()))
+                        .Returns(new ScriptResult()
+                            {
+                                IsPendingClosingChar = true
+                            });
+                _repl = GetRepl(mocks);
+
+                _repl.Execute("class test {");
+
+                mocks.InputHistory.Verify(history => history.AddLine("class test {"));
+                mocks.InputHistory.Verify(history => history.Commit(), Times.Never());
+            }
+
+            [Fact]
+            public void ShouldCommitToHistoryWhenNotHavingPendingClosingChar()
+            {
+                var mocks = new Mocks();
+                mocks.FilePreProcessor.Setup(
+                    filePreProcessor => filePreProcessor
+                        .ProcessScript("class test {}"))
+                        .Returns(new FilePreProcessorResult { Code = "class test {}" });
+                mocks.ScriptEngine.Setup(
+                    scriptEngine => scriptEngine
+                        .Execute(It.IsAny<string>(), It.IsAny<string[]>(), It.IsAny<AssemblyReferences>(), It.IsAny<IEnumerable<string>>(), It.IsAny<ScriptPackSession>()))
+                        .Returns(new ScriptResult()
+                        {
+                            IsPendingClosingChar = false
+                        });
+                _repl = GetRepl(mocks);
+
+                _repl.Execute("class test {}");
+
+                mocks.InputHistory.Verify(history => history.AddLine("class test {}"));
+                mocks.InputHistory.Verify(history => history.Commit());
+            }
+
+            [Fact]
+            public void ShouldRollbackHistoryWhenCurrentLineDoesNotCompileAndDoesNotHavePendingClosingChars()
+            {
+                var mocks = new Mocks();
+                mocks.FilePreProcessor.Setup(
+                    filePreProcessor => filePreProcessor
+                        .ProcessScript("invalid line"))
+                        .Returns(new FilePreProcessorResult { Code = "invalid line" });
+                mocks.ScriptEngine.Setup(
+                    scriptEngine => scriptEngine
+                        .Execute(It.IsAny<string>(), It.IsAny<string[]>(), It.IsAny<AssemblyReferences>(), It.IsAny<IEnumerable<string>>(), It.IsAny<ScriptPackSession>()))
+                        .Returns(new ScriptResult()
+                        {
+                            IsPendingClosingChar = false,
+                            CompileExceptionInfo = ExceptionDispatchInfo.Capture(new Exception())
+                        });
+                _repl = GetRepl(mocks);
+
+                _repl.Execute("invalid line");
+
+                mocks.InputHistory.Verify(history => history.Rollback(), Times.Once());
+                mocks.InputHistory.Verify(history => history.Commit(), Times.Never());
+            }
+
 
             [Fact]
             public void ShouldWriteToDefaultFileWhenDumping()
