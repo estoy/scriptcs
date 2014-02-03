@@ -58,9 +58,10 @@ namespace ScriptCs
                     var filePath = String.IsNullOrWhiteSpace(arg) ? "dump.csx" : arg;
 
                     var inputLines = _inputHistory.BuildHistory();
-                    _inputHistory.Clear();
 
                     WriteToDumpFile(filePath, inputLines, shouldAppend);
+
+                    _inputHistory.Clear();
                     
                     return new ScriptResult();
                 }
@@ -162,7 +163,7 @@ namespace ScriptCs
 
         private void WriteToDumpFile(string filePath, string content, bool shouldAppend)
         {
-            if (FileSystem.FileExists(filePath) && shouldAppend)
+            if (shouldAppend && FileSystem.FileExists(filePath))
             {
                 using (var fs = FileSystem.CreateFileStream(filePath, FileMode.Append))
                 {

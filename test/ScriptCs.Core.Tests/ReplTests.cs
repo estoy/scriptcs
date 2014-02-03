@@ -406,6 +406,18 @@ namespace ScriptCs.Tests
             }
 
             [Fact]
+            public void ShouldNotClearHistoryWhenDumpingFails()
+            {
+                _mocks.FileSystem.Setup(fs => fs.CurrentDirectory).Returns("A2:/");
+                _mocks.FileSystem.Setup(fs => fs.WriteToFile(It.IsAny<string>(), It.IsAny<string>())).Throws(new Exception());
+                _repl.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
+
+                _repl.Execute(":dump");
+
+                _mocks.InputHistory.Verify(ih => ih.Clear(), Times.Never());
+            }
+
+            [Fact]
             public void ShouldBuildHistoryWhenDumping()
             {
                 _mocks.FileSystem.Setup(i => i.CurrentDirectory).Returns("C:/");
